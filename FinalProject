@@ -1,0 +1,59 @@
+import numpy as np
+
+
+# Function to normalize a vector
+def normalize(vector):
+    norm = np.linalg.norm(vector)
+    return vector / norm if norm != 0 else vector
+
+
+# Function to perform the iterative eigenvector computation
+def power_iteration(matrix, max_iter=1000, tolerance=1e-10):
+    # Determine the size of the matrix to initialize size of vector v
+    n = matrix.shape[0]
+    # Initial vector (can be any non-zero vector, we use (1, 0, 0, ...))
+    v = np.zeros(n)
+    v[0] = 1
+
+    for i in range(max_iter):
+        # Multiply matrix by the vector
+        new_v = np.dot(matrix, v)
+
+        # Normalize the resulting vector
+        new_v = normalize(new_v)
+
+        # Check for convergence
+        if np.linalg.norm(new_v - v) < tolerance:
+            break
+        v = new_v
+
+    # The corresponding eigenvalue is obtained by Rayleigh quotient
+    eigenvalue = np.dot(v, np.dot(matrix, v)) / np.dot(v, v)
+    return v, eigenvalue
+
+
+# Main Program
+if __name__ == "__main__":
+    # Gets and stores user input for the size of the matrix
+    n = int(input("Enter the size of the matrix (n x n): "))
+
+    # Create an empty matrix based on the input
+    A = np.zeros((n, n))
+
+    # Allow the user to input each element of the matrix
+    print("Enter the elements of the matrix row by row:")
+    for i in range(n):
+        row = input(f"Enter row {i + 1} (space-separated values): ").split()
+        for j in range(n):
+            A[i, j] = float(row[j])
+
+    # Perform power iteration
+    v, eigenvalue = power_iteration(A)
+
+    print("\nMatrix A:")
+    print(A)
+    print("\nDominant Eigenvector:")
+    print(v)
+    print("\nCorresponding Eigenvalue:")
+    print(eigenvalue)
+
